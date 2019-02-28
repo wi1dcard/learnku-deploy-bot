@@ -11,5 +11,8 @@
         "psr-4": {
             "Wi1dcard\\LearnkuDeployBot\\": "src/"
         }
-    }
+    },
+    "bin": [
+        "learnku-deploy-bot"
+    ]
 }
