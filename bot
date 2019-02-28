@@ -1,0 +1,22 @@
+#!/usr/bin/env php
+<?php
+
+use Wi1dcard\LearnkuDeployBot\Commands\SessionCommand;
+use Wi1dcard\LearnkuDeployBot\Commands\ArticleListCommand;
+use Wi1dcard\LearnkuDeployBot\Commands\TokenCommand;
+use Wi1dcard\LearnkuDeployBot\Commands\ArticleUpdateCommand;
+
+include __DIR__ . '/vendor/autoload.php';
+
+$app = new \Symfony\Component\Console\Application(
+    'Learnku Deploy Bot'
+);
+
+$app->addCommands([
+    new SessionCommand(),
+    new ArticleListCommand(),
+    new TokenCommand(),
+    new ArticleUpdateCommand(),
+]);
+
+$app->run();
