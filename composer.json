@@ -1,0 +1,15 @@
+{
+    "name": "wi1dcard/learnku-deploy-bot",
+    "description": "A deploy bot for personal use.",
+    "type": "project",
+    "require": {
+        "kriswallsmith/buzz": "^1.0",
+        "symfony/console": "^4.2",
+        "nyholm/psr7": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Wi1dcard\\LearnkuDeployBot\\": "src"
+        }
+    }
+}
