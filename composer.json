@@ -3,6 +3,7 @@
     "description": "A deploy bot for personal use.",
     "type": "project",
     "require": {
+        "php": "^7.2",
         "kriswallsmith/buzz": "^1.0",
         "symfony/console": "^4.2",
         "nyholm/psr7": "^1.1"
