@@ -63,7 +63,7 @@ final class ArticleUpdateCommand extends LearnkuCommand
             $input->getOption('token'),
             $input->getOption('id'),
             $input->getOption('title'),
-            $fileContents,
+            $fileContents
         );
 
         $response = $this->httpClient->sendRequest($request);
