@@ -16,24 +16,24 @@ final class ArticleListCommand extends LearnkuCommand
         parent::configure();
 
         $this->setDescription('List all articles')
-            ->addOption('page', 'p', InputOption::VALUE_OPTIONAL, 'The page number', 1);
+            ->addOption('page', 'p', InputOption::VALUE_OPTIONAL, 'The page number');
     }
 
     protected function handle($input, $output)
     {
-        $pageNumber = $input->getOption('page');
+        $currentPage = $pageNumber = $input->getOption('page');
         $articles = [];
 
         do {
-            $request = new ArticleListRequest($this->cookies, $pageNumber);
+            $request = new ArticleListRequest($this->cookies, $currentPage);
 
             $response = $this->httpClient->sendRequest($request);
 
             $data = (new ArticleListExtractor())->extract($response);
 
             $articles += $data;
-            $pageNumber++;
-        } while (count($data) !== 0);
+            $currentPage++;
+        } while ($pageNumber === null && count($data) !== 0);
 
         foreach ($articles as $article) {
             $output->writeln($article['id'] . "\t" . $article['title']);
