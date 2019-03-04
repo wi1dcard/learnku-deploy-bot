@@ -23,7 +23,7 @@ final class ArticleUpdateCommand extends LearnkuCommand
             ->addOption('id', 'i', InputOption::VALUE_REQUIRED, 'The article ID')
             ->addOption('title', 'l', InputOption::VALUE_REQUIRED, 'The article title')
 
-            ->addArgument('file', InputArgument::REQUIRED, 'Full path of the new article');
+            ->addArgument('file', InputArgument::OPTIONAL, 'Full path of the new article');
     }
 
     protected function validate(InputInterface $input)
