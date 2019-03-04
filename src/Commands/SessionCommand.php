@@ -27,7 +27,7 @@ final class SessionCommand extends LearnkuCommand
 
         switch ($response->getStatusCode()) {
             case 200:
-                $output->success('Session valid.');
+                $output->writeln('Session valid.');
                 return 0;
             case 302:
                 $output->error('Session has expired or invaild.');

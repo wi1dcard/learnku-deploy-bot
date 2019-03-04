@@ -76,6 +76,6 @@ final class ArticleUpdateCommand extends LearnkuCommand
             return 1;
         }
 
-        $output->success('Article updated');
+        $output->writeln('Article updated.');
     }
 }
