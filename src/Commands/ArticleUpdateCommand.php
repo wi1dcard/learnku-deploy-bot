@@ -71,7 +71,7 @@ final class ArticleUpdateCommand extends LearnkuCommand
         $statusCode = $response->getStatusCode();
 
         if ($statusCode != 302) {
-            $output->error('Unusual HTTP status code: ' . $statusCode);
+            throw new \RuntimeException('Unusual HTTP status code: ' . $statusCode);
 
             return 1;
         }
