@@ -2,11 +2,9 @@
 
 namespace Wi1dcard\LearnkuDeployBot\Commands;
 
-use Buzz\Browser;
-use Buzz\Client\FileGetContents;
-use Wi1dcard\LearnkuDeployBot\Utils\LearnkuRequestFactory;
+use GuzzleHttp\Cookie\SetCookie;
+use Symfony\Component\Console\Input\InputOption;
 use Wi1dcard\LearnkuDeployBot\Requests\UserEditRequest;
-use Nyholm\Psr7\Factory\Psr17Factory;
 
 final class SessionCommand extends LearnkuCommand
 {
@@ -16,7 +14,8 @@ final class SessionCommand extends LearnkuCommand
     {
         parent::configure();
 
-        $this->setDescription('Check if session valid');
+        $this->setDescription('Check if session valid, generate new cookie.')
+            ->addOption('refresh', 'r', InputOption::VALUE_NONE, 'Generate new cookies.');
     }
 
     protected function handle($input, $output)
@@ -27,14 +26,31 @@ final class SessionCommand extends LearnkuCommand
 
         switch ($response->getStatusCode()) {
             case 200:
-                $output->writeln('Session valid.');
-                return 0;
+                break;
             case 302:
-                $output->error('Session has expired or invaild.');
+                throw new \RuntimeException('Session has expired or invaild.');
                 return 1;
             default:
-                $output->error('Unknown HTTP status:' . $response->getStatusCode());
+                throw new \RuntimeException('Unknown HTTP status:' . $response->getStatusCode());
                 return 2;
         }
+
+        if (!$input->getOption('refresh')) {
+            $output->writeln('Session valid.');
+            return 0;
+        }
+
+        $cookieHeaders = $response->getHeader('Set-Cookie');
+        foreach ($cookieHeaders as $header) {
+            $setCookie = SetCookie::fromString($header);
+            $cookieString = sprintf(
+                '%s=%s; ',
+                $setCookie->getName(),
+                $setCookie->getValue()
+            );
+            $output->write($cookieString);
+        }
+
+        $output->newLine();
     }
 }
