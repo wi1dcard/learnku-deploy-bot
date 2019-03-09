@@ -21,7 +21,8 @@ final class ArticleListCommand extends LearnkuCommand
 
     protected function handle($input, $output)
     {
-        $currentPage = $pageNumber = $input->getOption('page');
+        $pageNumber = $input->getOption('page');
+        $currentPage = $pageNumber ?? 1;
         $articles = [];
 
         do {
@@ -31,7 +32,7 @@ final class ArticleListCommand extends LearnkuCommand
 
             $data = (new ArticleListExtractor())->extract($response);
 
-            $articles += $data;
+            $articles = array_merge($articles, $data);
             $currentPage++;
         } while ($pageNumber === null && count($data) !== 0);
 
