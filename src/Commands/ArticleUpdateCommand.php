@@ -9,6 +9,8 @@ use Wi1dcard\LearnkuDeployBot\Extractors\ArticleListExtractor;
 use Symfony\Component\Console\Input\InputInterface;
 use Wi1dcard\LearnkuDeployBot\Requests\SubmitChangesRequest;
 use Symfony\Component\Console\Input\InputArgument;
+use Wi1dcard\LearnkuDeployBot\Requests\SubmitArticleRequest;
+use Symfony\Component\Console\Question\Question;
 
 final class ArticleUpdateCommand extends LearnkuCommand
 {
@@ -20,7 +22,7 @@ final class ArticleUpdateCommand extends LearnkuCommand
 
         $this->setDescription('Update an article')
             ->addOption('token', 't', InputOption::VALUE_REQUIRED, 'A valid CSRF token')
-            ->addOption('id', 'i', InputOption::VALUE_REQUIRED, 'The article ID')
+            ->addOption('id', 'i', InputOption::VALUE_OPTIONAL, 'The article ID')
             ->addOption('title', 'l', InputOption::VALUE_REQUIRED, 'The article title')
 
             ->addArgument('file', InputArgument::OPTIONAL, 'Full path of the new article');
@@ -30,7 +32,7 @@ final class ArticleUpdateCommand extends LearnkuCommand
     {
         $id = $input->getOption('id');
 
-        if (!is_numeric($id)) {
+        if ($id !== '' && $id !== null && !is_numeric($id)) {
             throw new \InvalidArgumentException('Article ID must be numeric: ' . $id);
         }
 
@@ -58,13 +60,29 @@ final class ArticleUpdateCommand extends LearnkuCommand
             }
         }
 
-        $request = new SubmitChangesRequest(
-            $this->cookies,
-            $input->getOption('token'),
-            $input->getOption('id'),
-            $input->getOption('title'),
-            $fileContents
-        );
+        $id = $input->getOption('id');
+        $token = $input->getOption('token');
+        $title = $input->getOption('title');
+
+        if ($id === '' || $id === null) {
+            $answer = $output->askQuestion(
+                new Question('Article ID empty, would you like to create a new article [y/N]?')
+            );
+            switch ($answer) {
+                case null:
+                case 'n':
+                case 'N':
+                    return 0;
+                case 'y':
+                case 'Y':
+                    break;
+                default:
+                    throw new \RuntimeException('Unexpected input.');
+            }
+            $request = new SubmitArticleRequest($this->cookies, $token, $title, $fileContents);
+        } else {
+            $request = new SubmitChangesRequest($this->cookies, $token, $id, $title, $fileContents);
+        }
 
         $response = $this->httpClient->sendRequest($request);
 
@@ -72,8 +90,6 @@ final class ArticleUpdateCommand extends LearnkuCommand
 
         if ($statusCode != 302) {
             throw new \RuntimeException('Unusual HTTP status code: ' . $statusCode);
-
-            return 1;
         }
 
         $output->writeln('Article updated.');

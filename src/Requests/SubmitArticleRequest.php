@@ -2,22 +2,20 @@
 
 namespace Wi1dcard\LearnkuDeployBot\Requests;
 
-class SubmitChangesRequest extends LearnkuRequest
+class SubmitArticleRequest extends LearnkuRequest
 {
-    public function __construct($cookies, $csrfToken, $articleId, $title, $content)
+    public function __construct($cookies, $csrfToken, $title, $content)
     {
         parent::__construct(
             $cookies,
             'POST',
-            "/topics/{$articleId}",
+            "/articles",
             [
-                '_method' => 'PATCH',
                 '_token' => $csrfToken,
                 'category_id' => 8, // May represents blogs.
                 'title' => $title,
-                'tags' => '',
+                'tags_string' => '',
                 'body' => $content,
-                'reason' => '',
                 'community_id' => 1, // May represents laravel-china.
             ]
         );
