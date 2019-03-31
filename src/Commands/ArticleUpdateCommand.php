@@ -24,8 +24,9 @@ final class ArticleUpdateCommand extends LearnkuCommand
             ->addOption('token', 't', InputOption::VALUE_REQUIRED, 'A valid CSRF token')
             ->addOption('id', 'i', InputOption::VALUE_OPTIONAL, 'The article ID')
             ->addOption('title', 'l', InputOption::VALUE_REQUIRED, 'The article title')
+            ->addOption('tag', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'The tag(s) that attach to the article')
 
-            ->addArgument('file', InputArgument::OPTIONAL, 'Full path of the new article');
+            ->addArgument('file', InputArgument::OPTIONAL, 'The full path of the article contents');
     }
 
     protected function validate(InputInterface $input)
@@ -63,6 +64,7 @@ final class ArticleUpdateCommand extends LearnkuCommand
         $id = $input->getOption('id');
         $token = $input->getOption('token');
         $title = $input->getOption('title');
+        $tags = implode(',', $input->getOption('tag'));
 
         if ($id === '' || $id === null) {
             $answer = $output->askQuestion(
@@ -79,9 +81,9 @@ final class ArticleUpdateCommand extends LearnkuCommand
                 default:
                     throw new \RuntimeException('Unexpected input.');
             }
-            $request = new SubmitArticleRequest($this->cookies, $token, $title, $fileContents);
+            $request = new SubmitArticleRequest($this->cookies, $token, $title, $fileContents, $tags);
         } else {
-            $request = new SubmitChangesRequest($this->cookies, $token, $id, $title, $fileContents);
+            $request = new SubmitChangesRequest($this->cookies, $token, $id, $title, $fileContents, $tags);
         }
 
         $response = $this->httpClient->sendRequest($request);
